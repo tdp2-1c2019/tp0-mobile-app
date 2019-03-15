@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TP 0 App</string>
+    <string name="search_hint">Escribe el nombre de un libro</string>
+</resources>
