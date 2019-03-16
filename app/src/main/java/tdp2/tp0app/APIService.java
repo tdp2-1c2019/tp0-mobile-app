@@ -2,6 +2,7 @@ package tdp2.tp0app;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -9,11 +10,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class APIService {
     private static final String BASE_URL = "https://tp0-api.herokuapp.com/api/books?q=";
 
-    public String getBooks(String query) {
+    public ServiceResponse<ArrayList<Book>> getBooks(String query) {
 
         HttpURLConnection client = null;
 
@@ -27,6 +29,8 @@ public class APIService {
             client.setRequestProperty("Accept", "application/json");
 
             client.connect();
+
+
 
             BufferedReader br;
             if (200 <= client.getResponseCode() && client.getResponseCode() <= 299) {
@@ -52,11 +56,19 @@ public class APIService {
                 throw new IllegalStateException(result.getString("message"));
             }
 
-            return stringResult;
+            JSONArray booksJson = result.getJSONArray("items");
+            ArrayList<Book> books = new ArrayList<>();
+
+            for (int i = 0; i < booksJson.length(); i++) {
+                JSONObject bookJson = booksJson.getJSONObject(i);
+                books.add(Book.fromJsonObject(bookJson));
+            }
+
+            return new ServiceResponse<>(ServiceResponse.ServiceStatusCode.SUCCESS, books);
 
         } catch (Exception exception) {
             Log.e("Exception", exception.getMessage());
-            return "";
+            return null;
         } finally {
             if (client != null) {
                 client.disconnect();

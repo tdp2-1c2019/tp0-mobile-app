@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -47,7 +48,7 @@ public class SearchActivity extends AppCompatActivity {
         new APIRequestTask().execute(query);
     }
 
-    protected class APIRequestTask extends AsyncTask<String, Void, String> {
+    protected class APIRequestTask extends AsyncTask<String, Void, ServiceResponse<ArrayList<Book>>> {
         private APIService apiService = new APIService();
         private String query;
         private Snackbar snackbar;
@@ -60,19 +61,28 @@ public class SearchActivity extends AppCompatActivity {
             this.snackbar.show();
         }
 
-        protected String doInBackground(String... params) {
+        protected ServiceResponse<ArrayList<Book>> doInBackground(String... params) {
             query = params[0];
             return apiService.getBooks(query);
         }
 
-        protected void onPostExecute(String response) {
+        protected void onPostExecute(ServiceResponse<ArrayList<Book>> response) {
             this.snackbar.dismiss();
 
-            Intent intent = new Intent(getBaseContext(), ResultsActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            intent.putExtra("QUERY", query);
-            intent.putExtra("RESPONSE", response);
-            startActivity(intent);
+            ServiceResponse.ServiceStatusCode statusCode = response.getStatusCode();
+
+            ArrayList<Book> result = response.getServiceResponse();
+
+            if (statusCode == ServiceResponse.ServiceStatusCode.SUCCESS && result != null) {
+                Intent intent = new Intent(getBaseContext(), ResultsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.putExtra("QUERY", query);
+                intent.putExtra("RESPONSE", result);
+                startActivity(intent);
+            }
+            else{
+                this.snackbar = Snackbar.make(findViewById(R.id.search_layout), "Ocurrio un error", Snackbar.LENGTH_SHORT);
+            }
         }
     }
 }
