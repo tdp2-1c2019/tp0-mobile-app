@@ -2,5 +2,7 @@
     <string name="app_name">TP 0 App</string>
     <string name="search_hint">Escribe el nombre de un libro</string>
     <string name="book_name_label">Título</string>
+    <string name="book_author_label">Autor/es</string>
+    <string name="book_categories_label">Categorías</string>
     <string name="book_description_label">Descripción</string>
 </resources>

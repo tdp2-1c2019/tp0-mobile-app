@@ -2,6 +2,7 @@ package tdp2.tp0app;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,16 +36,22 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
     public void onBindViewHolder(BooksAdapter.ViewHolder holder, int position) {
         final Book book = this.mData.get(position);
         holder.name.setText(book.name);
-        holder.description.setText(book.description);
+        holder.authors.setText(TextUtils.join(", ", book.authors));
+        holder.categories.setText(TextUtils.join(", ", book.categories));
+        holder.description.setContent(book.description);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView name;
-        TextView description;
+        TextView authors;
+        TextView categories;
+        SeeMoreTextView description;
 
         ViewHolder(View itemView) {
             super(itemView);
             this.name = itemView.findViewById(R.id.book_item_name);
+            this.authors = itemView.findViewById(R.id.book_item_author);
+            this.categories = itemView.findViewById(R.id.book_item_categories);
             this.description = itemView.findViewById(R.id.book_item_description);
         }
     }
