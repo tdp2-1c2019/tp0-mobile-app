@@ -35,14 +35,17 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
     public void onBindViewHolder(BooksAdapter.ViewHolder holder, int position) {
         final Book book = this.mData.get(position);
         holder.name.setText(book.name);
+        holder.description.setText(book.description);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView name;
+        TextView description;
 
         ViewHolder(View itemView) {
             super(itemView);
-            this.name =itemView.findViewById(R.id.book_item_name);
+            this.name = itemView.findViewById(R.id.book_item_name);
+            this.description = itemView.findViewById(R.id.book_item_description);
         }
     }
 }
