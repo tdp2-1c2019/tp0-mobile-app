@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class APIService {
     private static final String BASE_URL = "https://tp0-api.herokuapp.com/api/books?q=";
@@ -63,6 +64,8 @@ public class APIService {
                 JSONObject bookJson = booksJson.getJSONObject(i);
                 books.add(Book.fromJsonObject(bookJson));
             }
+
+            Collections.sort(books, new BookSort());
 
             return new ServiceResponse<>(ServiceResponse.ServiceStatusCode.SUCCESS, books);
 
