@@ -104,23 +104,23 @@ public class SearchActivity extends AppCompatActivity {
         protected void onPostExecute(ServiceResponse<ArrayList<Book>> response) {
             this.snackbar.dismiss();
 
-            if (response != null) {
-                ServiceResponse.ServiceStatusCode statusCode = response.getStatusCode();
+            ServiceResponse.ServiceStatusCode statusCode = response.getStatusCode();
 
-                ArrayList<Book> result = response.getServiceResponse();
+            ArrayList<Book> result = response.getServiceResponse();
 
-                if (statusCode == ServiceResponse.ServiceStatusCode.SUCCESS && result != null) {
-                    Intent intent = new Intent(getBaseContext(), ResultsActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    intent.putExtra("QUERY", query);
-                    intent.putExtra("RESPONSE", result);
-                    startActivity(intent);
-                }
-                else{
-                    this.snackbar = Snackbar.make(findViewById(R.id.search_layout), "Ocurrio un error", Snackbar.LENGTH_SHORT);
+            if (statusCode == ServiceResponse.ServiceStatusCode.SUCCESS && result != null) {
+                if (!result.isEmpty()) {
+                        Intent intent = new Intent(getBaseContext(), ResultsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        intent.putExtra("QUERY", query);
+                        intent.putExtra("RESPONSE", result);
+                        startActivity(intent);
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "“No hay libros que coincidan con la búsqueda realizada. Intentelo nuevamente con alguna palabra clave diferente.", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "“No hay libros que coincidan con la búsqueda realizada. Intentelo nuevamente con alguna palabra clave diferente.", Toast.LENGTH_LONG).show();
+                this.snackbar = Snackbar.make(findViewById(R.id.search_layout), "Ocurrio un error", Snackbar.LENGTH_SHORT);
             }
         }
     }
