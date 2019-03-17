@@ -12,13 +12,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-
-class BookSortByName implements Comparator<Book> {
-    public int compare(Book a, Book b) {
-        return a.name.compareTo(b.name);
-    }
-}
 
 public class APIService {
     private static final String BASE_URL = "https://tp0-api.herokuapp.com/api/books?q=";
@@ -72,7 +65,7 @@ public class APIService {
                 books.add(Book.fromJsonObject(bookJson));
             }
 
-            Collections.sort(books, new BookSortByName());
+            Collections.sort(books, new BookSort());
 
             return new ServiceResponse<>(ServiceResponse.ServiceStatusCode.SUCCESS, books);
 
