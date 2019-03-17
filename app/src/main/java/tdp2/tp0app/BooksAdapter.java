@@ -1,8 +1,11 @@
 package tdp2.tp0app;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,11 +31,18 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
     private Context context;
     private ArrayList<Book> mData;
     private LayoutInflater mInflater;
+    private RecyclerView resultsView;
 
     public BooksAdapter(Context context, ArrayList<Book> data) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView){
+        super.onAttachedToRecyclerView(recyclerView);
+        this.resultsView = recyclerView;
     }
 
     @Override
@@ -82,9 +92,11 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
         if (! book.downloadLink.isEmpty()){
             holder.downloadButton.setVisibility(View.VISIBLE);
             holder.downloadButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    new DownloadFileFromURL().execute(book.downloadLink);
-                }
+               public void onClick(View v) {
+            //        new DownloadFileFromURL().execute(book.downloadLink, book.name);
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(book.downloadLink));
+                    context.startActivity(browserIntent);
+               }
             });
         }
     }
@@ -108,12 +120,23 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
         }
     }
 
-    class DownloadFileFromURL extends AsyncTask<String, String, String> {
+    class DownloadFileFromURL extends AsyncTask<String, Void, String> {
+
+        private Snackbar snackbar;
+
+        public DownloadFileFromURL() {
+            this.snackbar = Snackbar.make(resultsView, "Descargando...", Snackbar.LENGTH_INDEFINITE);
+        }
+
+        protected void onPreExecute() {
+            this.snackbar.show();
+        }
+
         @Override
-        protected String doInBackground(String... f_url) {
+        protected String doInBackground(String... params) {
             int count;
             try {
-                URL url = new URL(f_url[0]);
+                URL url = new URL(params[0]);
                 URLConnection conection = url.openConnection();
                 conection.connect();
 
@@ -128,7 +151,8 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
                 // Output stream
                 File path = Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_DOWNLOADS);
-                File file = new File(path, "/2011.kml");
+                String fileName = params[1] + ".pdf";
+                File file = new File(path, fileName);
 
                 // Make sure the directory exists.
                 path.mkdirs();
@@ -141,9 +165,6 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
 
                 while ((count = input.read(data)) != -1) {
                     total += count;
-                    // publishing the progress....
-                    // After this onProgressUpdate will be called
-                    publishProgress("" + (int) ((total * 100) / lenghtOfFile));
 
                     // writing data to file
                     output.write(data, 0, count);
@@ -161,6 +182,10 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
             }
 
             return null;
+        }
+
+        protected void onPostExecute(String result) {
+            this.snackbar.dismiss();
         }
     }
 }
