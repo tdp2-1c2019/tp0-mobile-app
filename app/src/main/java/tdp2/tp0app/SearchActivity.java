@@ -1,8 +1,11 @@
 package tdp2.tp0app;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -11,6 +14,7 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -23,6 +27,13 @@ import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
 
+    public boolean isNetworkAvailabe() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+        return (networkInfo != null && networkInfo.isConnected());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +45,10 @@ public class SearchActivity extends AppCompatActivity {
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+        if (!this.isNetworkAvailabe()) {
+            Toast.makeText(getApplicationContext(), "No hay conectividad", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
