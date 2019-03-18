@@ -1,10 +1,12 @@
 package tdp2.tp0app;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -19,8 +21,16 @@ public class ResultsActivity extends AppCompatActivity {
 
         ArrayList<Book> books = (ArrayList<Book>) getIntent().getSerializableExtra("RESPONSE");
 
-        RecyclerView booksList = findViewById(R.id.booksList);
+        final RecyclerView booksList = findViewById(R.id.booksList);
         booksList.setAdapter(new BooksAdapter(ResultsActivity.this, books));
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                booksList.smoothScrollToPosition(0);
+            }
+        });
     }
 
     @Override
