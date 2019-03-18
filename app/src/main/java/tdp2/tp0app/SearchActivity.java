@@ -73,9 +73,11 @@ public class SearchActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent){
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction()) && isNetworkAvailabe()) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             doMySearch(query);
+        } else {
+            Toast.makeText(getApplicationContext(), "No hay conectividad", Toast.LENGTH_LONG).show();
         }
     }
 
