@@ -1,7 +1,6 @@
 package tdp2.tp0app;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,23 +14,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
 
-    public boolean isNetworkAvailabe() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
@@ -50,8 +38,8 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
-        if (!this.isNetworkAvailabe()) {
-            Toast.makeText(getApplicationContext(), "No hay conectividad", Toast.LENGTH_LONG).show();
+        if (!this.isNetworkAvailable()) {
+            Snackbar.make(findViewById(R.id.search_layout), "No hay conectividad", Snackbar.LENGTH_LONG).show();
         }
 
         boolean hasAllPermissions =
@@ -72,12 +60,21 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        if (!this.isNetworkAvailable()) {
+            Snackbar.make(findViewById(R.id.search_layout), "No hay conectividad", Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
     protected void onNewIntent(Intent intent){
-        if (Intent.ACTION_SEARCH.equals(intent.getAction()) && isNetworkAvailabe()) {
+        boolean hasConnectivity = isNetworkAvailable();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction()) && hasConnectivity) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             doMySearch(query);
-        } else {
-            Toast.makeText(getApplicationContext(), "No hay conectividad", Toast.LENGTH_LONG).show();
+        } else if (! hasConnectivity){
+            Snackbar.make(findViewById(R.id.search_layout), "No hay conectividad", Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -119,7 +116,7 @@ public class SearchActivity extends AppCompatActivity {
                         startActivity(intent);
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "“No hay libros que coincidan con la búsqueda realizada. Intentelo nuevamente con alguna palabra clave diferente.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.search_layout), "No hay libros que coincidan con la búsqueda realizada. Intentelo nuevamente con alguna palabra clave diferente.", Snackbar.LENGTH_LONG).show();
                 }
             } else {
                 this.snackbar = Snackbar.make(findViewById(R.id.search_layout), "Ocurrio un error", Snackbar.LENGTH_SHORT);
